@@ -2,4 +2,7 @@ BioInfo
 =======
 
 ==Projet1== 
-Starting project 1 by parsing the matrix.
+ALIGNEMENT
+
+==Project 2==
+BLOSUM MATRIX
