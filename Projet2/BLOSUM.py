@@ -1,26 +1,76 @@
+import copy
+from math import log
+
 def BLOSUM(listeFichiers,pourcentage):
 	listeMatrices = []
 	for nomFichier in listeFichiers:
 		#######listeSequences#######
 		listeSequences = recupererSequences(nomFichier)
-		#######listeProteinesDifferentes#######
-		#listeProteine = listeProteines(listeSequences)
-		#print(listeProteine)
 		#######groupesDifferents#######
 		listeGroupes = trouverGroupesDifferents(listeSequences,pourcentage)
 		#######ajoutListeMatrices#######
-		listeMatrices.append(matriceFrequencesPonderees(listeGroupes,['C', 'P', 'S', 'V', 'Y', 'R', 'L', 'M', 'Q', 'W', 'N', 'D', 'F', 'E', 'K', 'A', 'T', 'H', 'G', 'I']))
+		listeMatrices.append(matriceFrequencesPonderees(listeGroupes,['A','C','D','E','F','G','H','I','K','L','M','N','P','Q','R','S','T','V','W','Y']))
 	#######moyenneDesMatrices#######
 	matriceResultante = moyenneMatrices(listeMatrices)
 	#######probabilitésD'Occurences#######
 	matriceOccurences = calculProbabiliteOccurence(matriceResultante)
-	####### #######
+	#afficherMatrice(matriceOccurences)
+	#######calculDeLogChance#######
+	matriceFinale = calculMatriceFinale(matriceOccurences)
+	afficherMatrice(matriceFinale)
+	
+
+def calculMatriceFinale(matriceOccurences):
+	copieMatrice = copy.deepcopy(matriceOccurences)
+	for i in range(len(matriceOccurences)):
+		for j in range(len(matriceOccurences[0])):
+			matriceOccurences[i][j] = calculTauxLogChance(copieMatrice,i,j)
+	return matriceOccurences
+
+
+def calculTauxLogChance(matriceOccurences,i,j):
+	try:
+		#print("FREQUENCE")
+		#print(frequencePrevuePourAlignement(matriceOccurences,i,j))
+		if((matriceOccurences[i][j])/(frequencePrevuePourAlignement(matriceOccurences,i,j)) == 0):
+			res = 0
+		else:
+			res = 2*(log((matriceOccurences[i][j])/(frequencePrevuePourAlignement(matriceOccurences,i,j)), 2))
+	except(ZeroDivisionError):
+		res = 0
+	return res
+
+def frequencePrevuePourAlignement(matrice,indiceProteine1,indiceProteine2):
+	if(indiceProteine1 == indiceProteine2):
+		frequence = frequencePrevueParResidu(matrice,indiceProteine2)**2
+	else:
+		frequence = (2*frequencePrevueParResidu(matrice,indiceProteine1)*frequencePrevueParResidu(matrice,indiceProteine2))
+	return frequence
+
+def frequencePrevueParResidu(matriceOccurences,indiceProteine):
+	somme = 0
+	for i in range(len(matriceOccurences)):
+		if(i != indiceProteine):
+			somme+=matriceOccurences[i][indiceProteine]
+	somme= somme/2
+	somme+=matriceOccurences[indiceProteine][indiceProteine]
+	return somme
+	
+	
+def indiceProteine(proteine):
+	listeProteines = ['A','C','D','E','F','G','H','I','K','L','M','N','P','Q','R','S','T','V','W','Y']
+	indice = 0
+	for i in range(len(listeProteines)):
+		if(proteine == listeProteines[i]):
+			indice = i
+	return indice
 
 def calculProbabiliteOccurence(matrice):
 	sommePartieSuperieure = calculPartieSuperieureMatrice(matrice)
-	for i in range(len(matrice)):
-		for j in range(len(matrice[0])):
-			matrice[i][j]/= sommePartieSuperieure
+	if(sommePartieSuperieure != 0):
+		for i in range(len(matrice)):
+			for j in range(len(matrice[0])):
+				matrice[i][j]= (matrice[i][j]/sommePartieSuperieure)
 	return matrice
 
 def calculPartieSuperieureMatrice(matrice):
@@ -28,20 +78,19 @@ def calculPartieSuperieureMatrice(matrice):
 	for i in range(len(matrice)):
 		for j in range(len(matrice[0])):
 			if(j >= i):
-				print("i")
 				somme+=matrice[i][j]
 	return somme
 
 
 #Moyenne des matrices passées en paramètres
 def moyenneMatrices(listeMatrices):
-	matrice = []
+	matrice = [[0 for i in range(20)] for j in range(20)]
 	for i in range(len(listeMatrices[0])):
-		matrice.append([0 for m in range(len(listeMatrices[0][0]))])
 		for j in range(len(listeMatrices[0][0])):
 			for n in range(len(listeMatrices)):
+
 				matrice[i][j] += listeMatrices[n][i][j]
-			matrice[i][j] /= len(listeMatrices)
+			matrice[i][j] = matrice[i][j]/len(listeMatrices)
 	return matrice
 
 #Récupère les séquences dans un fichier donné
@@ -96,12 +145,8 @@ def matriceFrequencesPonderees(listeGroupes,listeProteines):
 	for i in range(len(listeProteines)):
 		matrice.append([0 for m in range(len(listeProteines))])
 		for j in range(len(listeProteines)):
-			#print("proteine1: "+ listeProteines[i]+" proteine2: "+ listeProteines[j] )
-			#print(calculFrequence(listeProteines[i],listeProteines[j],listeGroupes))
 			matrice[i][j] = calculFrequence(listeProteines[i],listeProteines[j],listeGroupes)
-	#print(matrice)
 	return matrice
-
 
 def colonneProteines(listeGroupes,indice):
 	colonne = []
@@ -120,19 +165,12 @@ def calculFrequence(proteine1,proteine2,listeGroupes):
 				if(proteine1 == proteine2):
 					for j in range(i,len(colonne)):
 						if(j != i and colonne[j] == proteine2 and calculGroupe(i,listeGroupes) != calculGroupe(j,listeGroupes)):
-							#if(proteine1 == "e"):
-								#print(calculGroupe(i,listeGroupes))
-								#print(calculGroupe(j,listeGroupes))
-								#print(calculPoidsGroupe(i,listeGroupes))
-								#print(calculPoidsGroupe(j,listeGroupes))
-								#print("-----------------------")
 							somme+=(calculPoidsGroupe(i,listeGroupes)*(calculPoidsGroupe(j,listeGroupes)))
 				else:
 					for j in range(len(colonne)):
 						if(j != i and colonne[j] == proteine2 and calculGroupe(i,listeGroupes) != calculGroupe(j,listeGroupes)):
 							somme+=(calculPoidsGroupe(i,listeGroupes)*(calculPoidsGroupe(j,listeGroupes)))
 	return somme
-
 
 def calculGroupe(indiceColonne,listeGroupes):
 	numeroGroupe = 0
@@ -142,9 +180,6 @@ def calculGroupe(indiceColonne,listeGroupes):
 			numeroGroupe+=1
 			positionActuelle+= len(listeGroupes[numeroGroupe])
 	return numeroGroupe
-
-
-
 
 #calcul du poids de la sequence, en utilisant son indice ds la colonne et la taille des différents groupes
 def calculPoidsGroupe(indiceColonne,listeGroupes):
@@ -166,11 +201,20 @@ def listeProteines(listeSequences):
                 liste.append(proteine)
     return liste
 
+def afficherMatrice(matrice):
 
-"""sequences = ["atckq","atcrn","asckn","sscrn","sdceq","secen","tecrq"]
-listeGroupes = [["atckq","atcrn","asckn","sscrn"],["sdceq","secen"],["tecrq"]]
-print(listeGroupes)
-print(listeProteines(sequences))
-print(matriceFrequencesPonderees(listeGroupes,["a","c","d","e","k","n","q","r","s","t"]))"""
+    indiceLigne = 0
+    
+    while (indiceLigne != len(matrice)):
+        indiceColonne = 0
+        while (indiceColonne != len(matrice)):
+            #if (indiceLigne == 0 or indiceColonne == 0):
+                #print (matrice[indiceLigne][indiceColonne], end = '   ')
+            #else:
+            print (round(matrice[indiceLigne][indiceColonne]), end = ' '*(4-len(str(round(matrice[indiceLigne][indiceColonne])))))
+            indiceColonne = indiceColonne + 1
+        indiceLigne = indiceLigne + 1
+        print()
 
-#BLOSUM(["PR00109A.txt","PR00109B.txt","PR00109C.txt","PR00109D.txt","PR00109E.txt"],0.5)
+
+BLOSUM(["PR00109A.txt","PR00109B.txt","PR00109C.txt","PR00109D.txt","PR00109E.txt"],0.7)
