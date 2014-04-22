@@ -1,0 +1,17 @@
+=Instructions=
+==Alignez les séquences==
+
+==compter chaque AA par colonne/position==
+n_(AA,pos)
+
+==Calculer les fréquences pour chaque AA==
+f_(AA,pos) = n_(AA,pos)/N_seq
+
+==Ajout de pseudo-counts==
+F_(AA,pos) = alpha.f_(AA,pos)+beta.p_AA/(alpha+beta)
+p_AA = SINISSPROT
+alpha = N_seq-1
+beta = sqrt(N_seq)
+
+==m_(AA,pos)==
+m_(AA,pos) = log()
