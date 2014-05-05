@@ -1,5 +1,6 @@
 =Instructions=
 ==Alignez les séquences==
+les AA en colonne et les positions en ligne
 
 ==compter chaque AA par colonne/position==
 n_(AA,pos)
@@ -8,10 +9,11 @@ n_(AA,pos)
 f_(AA,pos) = n_(AA,pos)/N_seq
 
 ==Ajout de pseudo-counts==
-F_(AA,pos) = alpha.f_(AA,pos)+beta.p_AA/(alpha+beta)
-p_AA = SINISSPROT
+q_(AA,pos) = alpha.f_(AA,pos)+beta.p_AA/(alpha+beta)
+p_AA = SwISSPROT
 alpha = N_seq-1
 beta = sqrt(N_seq)
 
 ==m_(AA,pos)==
-m_(AA,pos) = log()
+m_(AA,pos) = log(q_(AA,pos)/p_pos)
+
