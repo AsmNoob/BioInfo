@@ -5,6 +5,9 @@ les AA en colonne et les positions en ligne
 ==compter chaque AA par colonne/position==
 n_(AA,pos)
 
+1. Parser toutes les séquences
+2. parcourir 1 fois toutes les séquences et incrémenter la bonne case en fct.
+
 ==Calculer les fréquences pour chaque AA==
 f_(AA,pos) = n_(AA,pos)/N_seq
 
