@@ -1,0 +1,124 @@
+I(S,R) = log(proba(S|R)/ proba(S))
+
+S = 1 of 3 conformations().
+R = 1 of 20 amino acids residues.
+P(S|R) = probabilité d avoir une telle conformation avec un tel AA.
+P(S) = probabilité d observer S.
+
+Par définition P(S|R) = P(S,R)/P(R)
+
+P(S,R) = probabilité jointee d observer S et R.
+P(R) = probabilité d observer un résidu R.
+
+Il est donc facile d'avoir une estimation de I(S,R) en partant d'une
+base de données de séquences et des correspondances entre structures secondaires.
+
+P(S,R) = f_s,r/N
+P(R) = f_r/N
+P(S) = f_s/N
+
+N = total of number of amino acids in the database.
+f_s,r = the number of residues R observed in the conformation S in the same database
+f_s = total of residues(total) observed in the conformation S in the same database.
+f_r = total number of R residues
+
+I(S;R) = log((f_s,r/f_r)/(f_s/N))
+
+A more general treatment requires corrections for lvl of data. Introducing the information difference :
+
+I(DeltaS;R) = I(S;R) - I(n-S;R)
+ = log(f_s,r/f_n-s,r) + log(f_n-s,r/f_s)
+
+n-S = conformation other than S (= non-S).
+(example: if  is an helix, n-S is everything but an helix) 
+
+=> It gives the extra information for S on the 2 others.
+(N and R disappear from the equation)
+
+Calculated for the 3 conformations, the highest value of the 3 will be the predicted conformation and will be the "propensity"for that residue to be in that conformation.
+
+
+The equation can be extended 
+
+I(DeltaSj;R_1,...,R_n) = log(P(Sj,R_1,...,R_n)/P(n-Sj,R_1,...,R_n))
++ log(P(n-S)/P(S))
+
+P(Sj,R_1,...,R_n) = probabilité jointe de la conformation S à la position j dans la séquence et la séquence locale R_1,...,R_n
+
+/!\Remarque: 
+
+(1) P(Sj,R_1,...,R_n) + P(n-Sj,R_1,...,R_n) = 1
+
+(2) P(Sj,R_1,...,R_n)/P(n-Sj,R_1,...,R_n) = P(S)/(P(n-S))*e^(I(DeltaSj;R_1,...,R_n))
+
+
+=Approximations involved in GOR Method=
+
+GOR I:
+
+Ajoute à l'information du résidu unique, l'information "directionnelle" des 8 résidus se trouvant de chaque coté dans la séquence.
+
+Pour obtenir cette information, on commence par calculer la fréquence des 20 acides aminés aux différentes positions, jusqu'a 8 résidus sur le terminal N et terminal C, lorsqu'on on observe le résidu central dans une conformation donnée, indépendament de la nature du résidu. On assum qu'il n'y a pas de relations entre les 17 résidus ainsi définis.
+
+=> I(DeltaSj;R_1,...,R_n) ± I(DeltaSj;Rj) + Somme(m = -8(terminalN) à 8(terminalC))(I(DeltaSj;Rj+m)
+
+j = any position j in the sequence
+
+GOR II:
+
+same as GOR I but with a bigger database and more information
+
+GOT III:
+
+I(DeltaSj;R_1,...,R_n) = I(DeltaSj;Rj) + somme(-m,m)(I(DeltaSj;Rj+m|Rj))
+
+I(DeltaSj;Rj+m|Rj) = log(f_Sj,Rj+m,Rj/f_n-Sj,Rj+m,Rj) + log(f_n-Sj,Rj/f_Sj,Rj)
+
+
+
+
+Nico's project:
+
+main:
+1 fois DSSP avec info test
+1 fois avec info
+1 fois création dico avec training seq
+1 gor sur le fichier test_seq
+
+
+
+DSSP(+- parser)
+1)création d'une liste d'objets DSSP grace au fichier 
+1.1 ouverture fichier donner => lecture de toutes les lignes.
+1.2 DSSPlist created with the readlines()
+1.2.1 turnToObject() =>ajoute à une liste les objets lus transformés en DSSP
+1.2.1.1 DDSP() => class DSSP (qui fait rien juste qui permet d'avoir des objets)
+2)taitement des objet DSSP => écriture dans un fichier
+2.1 treatDSSPObject() => on ajoute au fichier les DSSP
+retrieve+secondary
+Dico
+1)récupération information
+1.1 récuperer les listes de sequences et de structures du fichier (getLists...) (contenant les séquences pour faire un dico)
+1.1.1 renvoie les listes readFromMyFile => renvoie la séquence lue.
+2) création du dico
+2.1 processByBlocTo => crée le dico de fq à partir des données d'entrainement.
+2.1.1 Algo GOR
+
+
+
+
+GOR
+1) les 4 conformations possibles ds une liste
+2) on vérifie le dico de fq
+3) on récupère list de seq et struct avec getListsFrom
+4) création du dico avec les informations mutuelles (processByBloc())
+5) on remplit un string prediction avec le calcul du plus présent (takeGreater => renvoie la structure secondaire possédant la plus grand I à un index précis)
+6) On fait un calcul des bonnes prédictions (compareStrings())
+7) Calcul de q3 => niveau Q3() reverifier le calcul pour obtenir la bonne prédiction.
+7.1 (6)/total de résidus*100
+8) calcul de MCC:
+check le code (easy peasy)
+
+
+
+

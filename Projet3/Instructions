@@ -1,8 +1,8 @@
-=Instructions=
-==Alignez les séquences==
+= Instructions =
+== Alignez les séquences ==
 les AA en colonne et les positions en ligne
 
-==compter chaque AA par colonne/position==
+== compter chaque AA par colonne/position ==
 n_(AA,pos)
 
 1. Parser toutes les séquences

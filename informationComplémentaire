@@ -1,0 +1,22 @@
+Les scores m_u,a représentent les scores pour aligner un résidu a à la psition u.
+
+Le grand problème pour créer des profils est que l'insuffisance du nb de seq et l'absence de données de certains aa dans plusieurs colonnes provoquent des log 0 = -infini
+
+Or il est impossible d'aligner un tel score -> Pseudo counts.
+
+Ce sont des const qu'on ajoute aux valeurs dans le profil.
+
+Lespseudo counts donnent l'information antérieure sur les aa.
+-> q_u,a n'est jamais égal à 0.
+
+On peut améliorer les pseudo counts en utilisant l'info ds les matrices de substitution.
+
+Enn multipliant la prob d'aligner un aa à la colonne u avec p_a produit un meilleur pseudocount pour a
+
+l'équation q_u,a devient q_u,a = (alpha.f_ua + beta.gu_u,a)/(alpha+beta)
+
+g_u,a peut être obtenue à partir de matrices de substitution com PAM et BLOSUM.
+
+Quand le pofil est calculé, on peut encore calculer une séquence consensus qui représente chaque position aa avec le plus haut sore m_u,a.
+
+S'inforler sur les méthodes d'alignement clustal et muscle.

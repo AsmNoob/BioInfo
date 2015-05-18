@@ -1,0 +1,131 @@
+BioInfo
+
+=Structure des proteines=
+
+4 niveau ds la structure:(primaire->quaternaire)
+
+Peut on prédire la structure avec la seqence?
+
+==Biologie Structurale==
+
+Cette structure tridimensionnelle est représentée par un fichier PDB, ce fichier donne les coordonnées des atomes ds la proteine.(Utiliser WW PDB)
+
+Quelle est la technique utilisée pour detrminer cette structure:
+
+==Differentes techniques pour determiner la structue==
+
+1.On place proteines dans une solution et on les passe au rayon x, ce qui permet de faire ressortir la forme
+
+
+2.On utilise le NMR qui consiste à calculer les variations des déplacements des protéines.
+
+3.Electronic microscopic: On veut rapidement connaître la structure globale des proteines. Et ensuite rentrer plus en détail en utilisant une des deux techniques précédentes.
+
+==Sequence vers structures==
+
+ATTENTION EXAMEN: pour predire la structure l'information nécessaire est la suivante: la seule info nécessaire est la sequence des acides aminés. Toute l'info se trouve au sein des acides aminés.
+
+paradoxe de levinthal: une proteine de 100 AA => 3^198 possibilités.
+
+On est encoe à la recherche de méthodes pour determiner cette structure.
+
+On a s'intéresser comment connaitre la structure secondaire en partant de la structure tertiaire. On va également évaluer la qualité de notre évaluation en utilisant la structure primaire(=Validation).
+
+==Explication 3-aire -> 2-aire ==
+
+===Les liens hydrogènes===
+Des fichiers PDB on peut prédire les liens hydrogènes.
+Grace à ces liens on a la structure.
+On peut également regarder les angles entre les molécules d'un AA (phi,psi) grace aux coordonnées atomiques.
+Et selon les angles, on peut déterminer la nature des liens et ainsi prédire la structure.
+
+===Define Secondary Structure of Proteines===
+Cette technique calcule les probabilités de liens hydrogène et permet:
+- classification des acides aminés
+- Structure secondaire déterminée en utilisant des motifs simples:
+	- CF SLIDE(chap 10)
+
+===Références pour les méthodes de prédiction===
+Ensemble de references 
+Structures de haute qualité
+Familles différentes
+
+Cet ensemble est composé au final de 6000(de 80000) protéines (on en utilise moins)
+
+Les outils:
+- DSSP (liaisons hydro)
+- STRIDE (liaisons hydro et angles)
+- DEFINE (distance interatomique)
+- Notion humaine
+
+Donc il est conseillé de combiner les données de techniques différentes.
+
+===Construction du prédicteur===
+Parfois ds un fichier on a plusieurs exemples pour une même proteines et il suffit d'éliminer des chaines afin d'en garder 1.
+
+===Validation ?===
+2 méthodes:
+- comparer les prédictions et nos tests.
+- Séparation des données en une collection d'entrainement et de test.
+
+La cross-verification: division de l'ensemble de'entrainement en sous-ensembles.
+(suite cf slides)
+
+===Calcul Qualité===
+Q = N_residus_correctly_predicted/N_residus_total
+Q pour une prédiction aléatoire = 1/3
+Q avec des vraies données = 0.38
+
+Ca ressemble à la sequence et la structure en fct.
+
+sequence :  THISISIMADKDIDISKEIIFIE
+secondaire: HHHHCCCEEEECCCEEECCCHHH
+
+(H: helice, E: brin, C: coil)
+
+prediction 1:
+prediction 2:
+
+On calcule le % de similarité mais ça ne suffit pas, il faut faire attention à d'autres critères.(MCC)
+- prédiction our chaque état secondaire
+- Utilise vrai/faux positifs (FT/TP) et negatifs (FN/TN)
+
+Calcul de MCC = cf chap 10
+
+===Mesure de SOV===
+Le SOV se base sur la superosition moyenne entre le segement observé et le segment prévu par la méthode.
+Punnit les affectatins interrompues.
+
+==CONSTRUCTION DU PREDICTEUR (CHOU-FASMAN)==
+Idée: calculer pour chaque acide aminé la probabilité que cet acide construise un brin, helice ou un coil.
+Regles: pour faire la prédiction il faut suivre des règles bien précises.
+
+Grace au tableau on peut calculer des fréquences(pramètres conformationnels)
+Et grace aux propensions on peut prédire les structures secondaires selon les residues.
+2 règles: cf slide chap 10 (une pour les et l'autre pour les )
+
+Assignez à chaque AA la propension P_alpha/P_beta
+regles heuristiques: Regle générale pour les helices
+
+Exemple: AA / Pa / Pb / a (région i,a,b,h,I,A,B,H) / poids / (par groupe de 6 on regarde le score obtenu en sommant leur poids) / Moyenne <P_alpha> (si score > 1.05 alors ça indique la possibilité d'un delta_brin)
+
+Méthode similaire pour les beta_brins
+
+On regarde ensuite les deux tableaux combinés, et on garde le cas le plus plausible, si ce n'est ni un brin ni un helix -> coil.
+
+Conclusion: Méthode extremement simple, car ne regarde pas les interactions entre AA, mais il donne un résultat sympathique.
+
+=PROJET=
+==Méthode GOR III==
+Utilise:
+- info individuelle
+- info par pair
+- info 
+
+===Info Individuelle===
+Demander à Manon pour la formule
+Attention utiliser la formule générale !!
+
+Modification de l'inforamtion par pairs ds le GOR III
+
+Prof: le GOR IV est beaucoup plus mieux, il a dit  6080 en lisant 684.
